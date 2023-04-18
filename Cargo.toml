@@ -1,0 +1,12 @@
+[package]
+name = "monrust"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = {version= "=0.5.0-rc.3", features = ["json"] }
+dotenv = "0.15.0"
+mongodb = {version= "2.4.0", default-features = false, features = ["sync"]}
+serde = "1.0.160"
