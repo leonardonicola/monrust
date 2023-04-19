@@ -1,8 +1,5 @@
 use crate::{models::user_model::User, repository::mongodb_repos::MongoRepo};
-use mongodb::{
-    bson::oid::ObjectId,
-    results::{InsertOneResult},
-};
+use mongodb::{bson::oid::ObjectId, results::InsertOneResult};
 use rocket::{http::Status, serde::json::Json, State};
 
 #[post("/user", data = "<new_user>")]
@@ -42,7 +39,7 @@ pub fn get_user(db: &State<MongoRepo>, path: String) -> Result<Json<User>, Statu
 #[get("/user")]
 pub fn get_all_users(db: &State<MongoRepo>) -> Result<Json<Vec<User>>, Status> {
     let users = db.get_all_users();
-   match users {
+    match users {
         Ok(users) => {
             if users.is_empty() {
                 Err(Status::NotFound)
