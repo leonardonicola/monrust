@@ -53,15 +53,12 @@ impl MongoRepo {
     }
 
     pub fn get_all_users(&self) -> Result<Vec<User>, Error> {
-        let mut cursor = self.col.find(None, None).unwrap();
-
-        let mut users: Vec<User> = Vec::new();
-        while let Some(result) = cursor.next() {
-            match result {
-                Ok(document) => users.push(document),
-                Err(_) => (),
-            }
-        }
+        let cursors = self
+            .col
+            .find(None, None)
+            .ok()
+            .expect("Error getting list of users");
+        let users = cursors.map(|doc| doc.unwrap()).collect();
         Ok(users)
     }
 
