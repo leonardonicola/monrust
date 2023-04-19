@@ -4,7 +4,7 @@ use std::env;
 use crate::models::user_model::User;
 use mongodb::{
     bson::{doc, extjson::de::Error, oid::ObjectId},
-    results::InsertOneResult,
+    results::{InsertOneResult, UpdateResult},
     sync::{Client, Collection},
 };
 
@@ -50,5 +50,37 @@ impl MongoRepo {
             .ok()
             .expect("Error getting user");
         Ok(user_detail.unwrap())
+    }
+
+    pub fn get_all_users(&self) -> Result<Vec<User>, Error> {
+        let mut cursor = self.col.find(None, None).unwrap();
+
+        let mut users: Vec<User> = Vec::new();
+        while let Some(result) = cursor.next() {
+            match result {
+                Ok(document) => users.push(document),
+                Err(_) => (),
+            }
+        }
+        Ok(users)
+    }
+
+    pub fn edit_user(&self, user_id: &String, edited_user: User) -> Result<UpdateResult, Error> {
+        let obj_id = ObjectId::parse_str(user_id).unwrap();
+        let filter = doc! {"_id": obj_id};
+        let new_doc = doc! {
+            "$set":
+            {
+                "id": edited_user.id,
+                "name": edited_user.name,
+                "title": edited_user.title
+            },
+        };
+        let updated_doc = self
+            .col
+            .update_one(filter, new_doc, None)
+            .ok()
+            .expect("Error updating user");
+        Ok(updated_doc)
     }
 }
